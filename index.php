@@ -18,7 +18,7 @@ $activeTab = 'home';
 
   <div class="container-fluid" style="margin-top:50px">
     <div class="row">
-      <div class="col-sm-2" style="background-color:lavender;">
+      <div class="col-sm-2">
         :)
       </div>
     </div>

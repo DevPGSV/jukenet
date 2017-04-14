@@ -1,7 +1,7 @@
 <?php
-$pageTitle = 'Messages';
-$activeTab = 'messages';
-
+require_once(__DIR__ . '/core/init.php');
+$pageTitle = 'Home';
+$activeTab = 'home';
 
 
 ?><!DOCTYPE html>
@@ -20,8 +20,8 @@ $activeTab = 'messages';
     <div class="row">
       <div class="col-sm-2">
         <?php
-        if (!$user) {
-            echo 'Only for logged in users!';
+        if (!empty($_GET['search'])) {
+            echo htmlentities($_GET['search']);
         }
         ?>
       </div>

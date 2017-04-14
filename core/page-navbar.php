@@ -23,13 +23,16 @@ if (!$user) {
               </ul>
               <!--<p class="navbar-text">Some text</p>-->
 
-              <form class="navbar-form navbar-left">
+              <form class="navbar-form navbar-left" action="music.php" method="GET">
                   <div class="input-group">
-                      <input type="text" class="form-control" placeholder="Search Music">
+                      <input type="text" id="navbar-searchform-field" class="form-control" name="search" placeholder="Search Music" value="<?php echo empty($_GET['search']) ? '' : htmlentities($_GET['search']); ?>" style="width: 300px;">
                       <div class="input-group-btn">
-                      <button class="btn btn-default" type="submit">
-                          <i class="glyphicon glyphicon-search"></i>
-                      </button>
+                        <button class="btn btn-default" onclick="$('#navbar-searchform-field').val('');" type="button">
+                            <i class="glyphicon glyphicon-remove"></i>
+                        </button>
+                        <button class="btn btn-default" type="submit">
+                            <i class="glyphicon glyphicon-search"></i>
+                        </button>
                       </div>
                   </div>
               </form>
@@ -144,12 +147,10 @@ if (!$user) {
   </div>
 
   <script>
-    apiurl = 'api.php';
+    var apiurl = 'api.php';
 
     $("[data-hide]").on("click", function(){
         $("." + $(this).attr("data-hide")).hide();
-        // -or-, see below
-        // $(this).closest("." + $(this).attr("data-hide")).hide();
     });
 
     $('#signup-button').click(function(){
@@ -161,24 +162,29 @@ if (!$user) {
     });
 
     $('#signup-modal-clear').click(function(){
-      $("#signup-form-username").val('');
-      $("#signup-form-email").val('');
-      $("#signup-form-password").val('');
-      $("#signup-form-password2").val('');
+      $("#signup-form input").val('');
     });
 
     $('#login-modal-clear').click(function(){
-      $("#login-form-username").val('');
-      $("#login-form-password").val('');
+      $("#login-form input").val('');
     });
 
     $('#signup-modal-singup').click(function(){
+      if ($("#signup-form-password").val() !== $("#signup-form-password2").val()) {
+        $("#signup-form-messages p").html('Password doesn\'t match!');
+        $("#signup-form-messages").removeClass("alert-success");
+        $("#signup-form-messages").addClass("alert-danger");
+        $("#signup-form-messages").show();
+        return;
+      }
       $.ajax({
         type: "POST",
         url: apiurl + "?action=register",
         dataType: 'json',
         data: {
-          //'username': $("#form-login input#usuario").val(),
+          'username': $("#signup-form-username").val(),
+          'email': $("#signup-form-email").val(),
+          'password': $("#signup-form-password").val(),
         },
         success: function(data) {
           if (data['status'] === 'ok') {
@@ -206,7 +212,8 @@ if (!$user) {
         url: apiurl + "?action=login",
         dataType: 'json',
         data: {
-          //'username': $("#form-login input#usuario").val(),
+          'username': $("#login-form-username").val(),
+          'password': $("#login-form-password").val(),
         },
         success: function(data) {
           if (data['status'] === 'ok') {
