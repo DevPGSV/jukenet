@@ -1,4 +1,5 @@
 <?php
+require_once(__DIR__ . '/core/init.php');
 $pageTitle = 'Messages';
 $activeTab = 'messages';
 
@@ -22,6 +23,8 @@ $activeTab = 'messages';
         <?php
         if (!$user) {
             echo 'Only for logged in users!';
+        } else {
+            echo 'Messages here :)';
         }
         ?>
       </div>

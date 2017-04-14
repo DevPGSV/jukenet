@@ -16,12 +16,21 @@ switch ($_GET['action']) {
       'status' => 'ok',
       'msg' => 'test ok',
     ];
+    $_SESSION['user'] = 1;
     break;
   case 'register':
     $answer = [
-      'status' => 'error',
-      'msg' => 'test error',
+      'status' => 'ok',
+      'msg' => 'test ok',
     ];
+    break;
+  case 'logout':
+    $answer = [
+      'status' => 'ok',
+      'msg' => 'test ok',
+    ];
+    $_SESSION['user'] = '';
+    unset($_SESSION['user']);
     break;
   default:
     $answer = [

@@ -53,7 +53,7 @@ if (!$user) {
                           <ul class="dropdown-menu">
                               <li><a href="#">O1</a></li>
                               <li><a href="#">O2</a></li>
-                              <li><a href="?logout"><span class="glyphicon glyphicon-log-out"></span>Log out</a></li>
+                              <li><a href="#" id="logout-button"><span class="glyphicon glyphicon-log-out"></span> Log out</a></li>
                           </ul>
                       </li>
                     ';
@@ -169,6 +169,18 @@ if (!$user) {
       $("#login-form input").val('');
     });
 
+    $('#logout-button').click(function(){
+      $.ajax({
+        type: "POST",
+        url: apiurl + "?action=logout",
+        dataType: 'json',
+        data: {},
+        success: function(data) {
+          location.reload();
+        },
+      });
+    });
+
     $('#signup-modal-singup').click(function(){
       if ($("#signup-form-password").val() !== $("#signup-form-password2").val()) {
         $("#signup-form-messages p").html('Password doesn\'t match!');
@@ -195,6 +207,9 @@ if (!$user) {
 
             setTimeout(function(){
               $("#signup-modal").modal('hide');
+              setTimeout(function(){
+                $("#login-modal").modal();
+              }, 500);
             }, 1000);
           } else {
             $("#signup-form-messages p").html(data['msg']);
@@ -224,6 +239,9 @@ if (!$user) {
 
             setTimeout(function(){
               $("#login-modal").modal('hide');
+              setTimeout(function(){
+                location.reload();
+              }, 500);
             }, 1000);
           } else {
             $("#login-form-messages p").html(data['msg']);
