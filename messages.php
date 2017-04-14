@@ -1,7 +1,7 @@
 <?php
-require_once(__DIR__ . '/core/init.php');
-$pageTitle = 'Home';
-$activeTab = 'home';
+$pageTitle = 'Messages';
+$activeTab = 'messages';
+
 
 
 ?><!DOCTYPE html>
