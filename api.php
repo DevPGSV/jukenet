@@ -12,30 +12,66 @@ if (empty($_GET['action'])) {
 
 switch ($_GET['action']) {
   case 'login':
-    $answer = [
-      'status' => 'ok',
-      'msg' => 'test ok',
-    ];
-    $_SESSION['user'] = 1;
+    $u = $db->getUserDataByUsername($_POST['username']);
+    if ($u === false) {
+      $u = $db->getUserDataByEmail($_POST['username']);
+    }
+    if ($u === false) {
+      $answer = [
+        'status' => 'error',
+        'msg' => 'user_doesnt_exist',
+      ];
+    } else {
+      if (password_verify($_POST['password'], $u['pw'])) {
+        $_SESSION['user'] = $u['id'];
+        $answer = [
+          'status' => 'ok',
+          'msg' => 'user_loggedin',
+        ];
+      } else {
+        $answer = [
+          'status' => 'error',
+          'msg' => 'password_incorrect',
+        ];
+      }
+    }
     break;
   case 'register':
-    $answer = [
-      'status' => 'ok',
-      'msg' => 'test ok',
-    ];
+    if ($db->getUserDataByUsername($_POST['username']) !== false) {
+      $answer = [
+        'status' => 'error',
+        'msg' => 'user_exists',
+      ];
+    } else if ($db->getUserDataByEmail($_POST['email']) !== false) {
+      $answer = [
+        'status' => 'error',
+        'msg' => 'email_exists',
+      ];
+    } else if ($uid = $db->registerNewUser($_POST['username'], password_hash($_POST['password'], PASSWORD_BCRYPT, ['cost' => 12]), $_POST['email'])) {
+      $_SESSION['user'] = $uid;
+      $answer = [
+        'status' => 'ok',
+        'msg' => 'user_registered',
+      ];
+    } else {
+      $answer = [
+        'status' => 'error',
+        'msg' => 'unknown',
+      ];
+    }
     break;
   case 'logout':
-    $answer = [
-      'status' => 'ok',
-      'msg' => 'test ok',
-    ];
     $_SESSION['user'] = '';
     unset($_SESSION['user']);
+    $answer = [
+      'status' => 'ok',
+      'msg' => 'logged_out',
+    ];
     break;
   default:
     $answer = [
       'status' => 'error',
-      'msg' => 'unknown action',
+      'msg' => 'unknown_action',
     ];
     break;
 }

@@ -1,11 +1,3 @@
-<?php
-if (!$user) {
-    $unreadMessages = 0;
-} else {
-    $unreadMessages = $user['unread'];
-}
-
-?>
 <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container-fluid">
           <div class="navbar-header">
@@ -19,10 +11,8 @@ if (!$user) {
           <div class="collapse navbar-collapse" id="myNavbar">
               <ul class="nav navbar-nav">
                   <li class="<?php echo ($activeTab === 'home')? 'active' : ''; ?>"><a href="index.php">Home</a></li>
-                  <li class="<?php echo ($activeTab === 'messages')? 'active' : ''; ?>"><a href="messages.php">Messages<?php echo ($unreadMessages > 0) ? " <span class='badge'>$unreadMessages</span>" : ''; ?></a></li>
+                  <li class="<?php echo ($activeTab === 'messages')? 'active' : ''; ?>"><a href="messages.php">Messages <span class='badge'>0</span></a></li>
               </ul>
-              <!--<p class="navbar-text">Some text</p>-->
-
               <form class="navbar-form navbar-left" action="music.php" method="GET">
                   <div class="input-group">
                       <input type="text" id="navbar-searchform-field" class="form-control" name="search" placeholder="Search Music" value="<?php echo empty($_GET['search']) ? '' : htmlentities($_GET['search']); ?>" style="width: 300px;">
@@ -47,7 +37,7 @@ if (!$user) {
                 } else {
                     echo '
                       <li class="dropdown">
-                          <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-user"></span> '.$user['username'].'
+                          <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-user"></span> '.htmlentities($user['username']).'
                               <span class="caret"></span>
                           </a>
                           <ul class="dropdown-menu">
@@ -102,6 +92,7 @@ if (!$user) {
           </form>
         </div>
         <div class="modal-footer">
+          <button type="button" class="btn btn-default" id="signup-modal-login">Login</button>
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
           <button type="button" class="btn btn-default" id="signup-modal-clear">Clear</button>
           <button type="button" class="btn btn-primary" id="signup-modal-singup">Register</button>
@@ -138,6 +129,7 @@ if (!$user) {
           </form>
         </div>
         <div class="modal-footer">
+          <button type="button" class="btn btn-default" id="login-modal-register">Register</button>
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
           <button type="button" class="btn btn-default" id="login-modal-clear">Clear</button>
           <button type="button" class="btn btn-primary" id="login-modal-login">Login</button>
@@ -145,111 +137,3 @@ if (!$user) {
       </div>
     </div>
   </div>
-
-  <script>
-    var apiurl = 'api.php';
-
-    $("[data-hide]").on("click", function(){
-        $("." + $(this).attr("data-hide")).hide();
-    });
-
-    $('#signup-button').click(function(){
-      $("#signup-modal").modal();
-    });
-
-    $('#login-button').click(function(){
-      $("#login-modal").modal();
-    });
-
-    $('#signup-modal-clear').click(function(){
-      $("#signup-form input").val('');
-    });
-
-    $('#login-modal-clear').click(function(){
-      $("#login-form input").val('');
-    });
-
-    $('#logout-button').click(function(){
-      $.ajax({
-        type: "POST",
-        url: apiurl + "?action=logout",
-        dataType: 'json',
-        data: {},
-        success: function(data) {
-          location.reload();
-        },
-      });
-    });
-
-    $('#signup-modal-singup').click(function(){
-      if ($("#signup-form-password").val() !== $("#signup-form-password2").val()) {
-        $("#signup-form-messages p").html('Password doesn\'t match!');
-        $("#signup-form-messages").removeClass("alert-success");
-        $("#signup-form-messages").addClass("alert-danger");
-        $("#signup-form-messages").show();
-        return;
-      }
-      $.ajax({
-        type: "POST",
-        url: apiurl + "?action=register",
-        dataType: 'json',
-        data: {
-          'username': $("#signup-form-username").val(),
-          'email': $("#signup-form-email").val(),
-          'password': $("#signup-form-password").val(),
-        },
-        success: function(data) {
-          if (data['status'] === 'ok') {
-            $("#signup-form-messages p").html(data['msg']);
-            $("#signup-form-messages").removeClass("alert-danger");
-            $("#signup-form-messages").addClass("alert-success");
-            $("#signup-form-messages").show();
-
-            setTimeout(function(){
-              $("#signup-modal").modal('hide');
-              setTimeout(function(){
-                $("#login-modal").modal();
-              }, 500);
-            }, 1000);
-          } else {
-            $("#signup-form-messages p").html(data['msg']);
-            $("#signup-form-messages").removeClass("alert-success");
-            $("#signup-form-messages").addClass("alert-danger");
-            $("#signup-form-messages").show();
-          }
-        },
-      });
-    });
-
-    $('#login-modal-login').click(function(){
-      $.ajax({
-        type: "POST",
-        url: apiurl + "?action=login",
-        dataType: 'json',
-        data: {
-          'username': $("#login-form-username").val(),
-          'password': $("#login-form-password").val(),
-        },
-        success: function(data) {
-          if (data['status'] === 'ok') {
-            $("#login-form-messages p").html(data['msg']);
-            $("#login-form-messages").removeClass("alert-danger");
-            $("#login-form-messages").addClass("alert-success");
-            $("#login-form-messages").show();
-
-            setTimeout(function(){
-              $("#login-modal").modal('hide');
-              setTimeout(function(){
-                location.reload();
-              }, 500);
-            }, 1000);
-          } else {
-            $("#login-form-messages p").html(data['msg']);
-            $("#login-form-messages").removeClass("alert-success");
-            $("#login-form-messages").addClass("alert-danger");
-            $("#login-form-messages").show();
-          }
-        },
-      });
-    });
-  </script>
