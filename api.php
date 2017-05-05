@@ -68,6 +68,36 @@ switch ($_GET['action']) {
       'msg' => 'logged_out',
     ];
     break;
+  case 'getMessage':
+    if (!$user) {
+      $answer = [
+        'status' => 'error',
+        'msg' => 'not_logged_in',
+      ];
+    } else {
+      $message = $db->getMessageById($_POST['messageid']);
+      $answer = [
+        'status' => 'ok',
+        'msg' => 'message_obtained',
+        'message' => $message,
+      ];
+    }
+    break;
+  case 'readMessage':
+    if (!$user) {
+      $answer = [
+        'status' => 'error',
+        'msg' => 'not_logged_in',
+      ];
+    } else {
+      $_POST['markRead'] = $_POST['markRead'] == 'true';
+      $message = $db->markMessageReadById((int)$_POST['messageid'], $_POST['markRead']);
+      $answer = [
+        'status' => 'ok',
+        'msg' => 'message_marked',
+      ];
+    }
+    break;
   default:
     $answer = [
       'status' => 'error',

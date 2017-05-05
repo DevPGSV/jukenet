@@ -68,11 +68,43 @@ class Database {
     }
 
     public function getUserMessages($userid) {
-        $sql = "SELECT * FROM users WHERE to_user=?";
+        $sql = "SELECT
+            messages.id, messages.subject, messages.text, messages.timestamp, messages.isRead,
+            from_user.id as `from_user.id`, from_user.username as `from_user.username`, from_user.email as `from_user.email`, from_user.role as `from_user.role`,
+            to_user.id as `to_user.id`, to_user.username as `to_user.username`, to_user.email as `to_user.email`, to_user.role as `to_user.role`
+          FROM messages
+          JOIN users from_user ON from_user.id = messages.from_userid
+          JOIN users to_user ON to_user.id = messages.to_userid
+          WHERE
+            messages.to_userid=? OR
+            messages.from_userid=?
+          ";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([$userid]);
+        $stmt->execute([$userid,$userid]);
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $rows;
+    }
+
+    public function getMessageById($messageid) {
+      $sql = "SELECT
+          messages.id, messages.subject, messages.text, messages.timestamp, messages.isRead,
+          from_user.id as `from_user.id`, from_user.username as `from_user.username`, from_user.email as `from_user.email`, from_user.role as `from_user.role`,
+          to_user.id as `to_user.id`, to_user.username as `to_user.username`, to_user.email as `to_user.email`, to_user.role as `to_user.role`
+        FROM messages
+        JOIN users from_user ON from_user.id = messages.from_userid
+        JOIN users to_user ON to_user.id = messages.to_userid
+        WHERE messages.id=?";
+      $stmt = $this->db->prepare($sql);
+      $stmt->execute([$messageid]);
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      if (count($rows) === 1) return $rows[0];
+      return false;
+    }
+
+    public function markMessageReadById($messageid, $markRead = true) {
+      $sql = "UPDATE messages SET isRead = ? WHERE id=?";
+      $stmt = $this->db->prepare($sql);
+      return $stmt->execute([$markRead, $messageid]);
     }
 
     public function registerNewUser($username, $password, $email, $role = 'newbie') {
@@ -84,6 +116,7 @@ class Database {
           return false;
         }
     }
+
 }
 
 $db = new Database('jukenet', 'jukenet', 'jukenet', 'localhost');

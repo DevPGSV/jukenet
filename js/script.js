@@ -7,6 +7,65 @@ $(document).ready(function() {
 
   var apiurl = 'api.php';
 
+  $("[data-messageid][data-action='popup_message']").on("click", function() {
+    var messageEntry = this;
+    $.ajax({
+      type: "POST",
+      url: apiurl + "?action=getMessage",
+      dataType: 'json',
+      data: {
+        messageid: $(messageEntry).attr('data-messageid')
+      },
+      success: function(data) {
+        console.log(data);
+        if (data.status === 'ok') {
+          $("#message-modal").attr('data-messageid', data.message.id);
+          $("#message-modal .modal-title").text(data.message.subject);
+          $("#message-modal .modal-body").html(data.message.text);
+          $("#message-modal").modal();
+          $(messageEntry).removeClass('message_not_read');
+          $.ajax({
+            type: "POST",
+            url: apiurl + "?action=readMessage",
+            dataType: 'json',
+            data: {
+              messageid: $(messageEntry).attr('data-messageid'),
+              markRead: true,
+            },
+          });
+        }
+      },
+    });
+  });
+
+  $('#message-modal-markasnotread').click(function() {
+    var mid = $('#message-modal').attr('data-messageid');
+    $.ajax({
+      type: "POST",
+      url: apiurl + "?action=readMessage",
+      dataType: 'json',
+      data: {
+        messageid: mid,
+        markRead: false,
+      },
+      success: function(data) {
+        $('.message_entry[data-messageid=' + mid + ']').addClass('message_not_read');
+        $('#message-modal').modal('hide');
+      },
+    });
+  });
+
+  $("[data-userid][data-action='popup_user']").on("click", function() {
+    console.log($(this).attr('data-userid'));
+  });
+
+  $("[data-action]").css("cursor", "pointer");
+  $("[data-action]").hover(function() {
+    $(this).css("box-shadow", "inset 0px 0px 5px 1px blue")
+  }).mouseout(function() {
+    $(this).css("box-shadow", "none");
+  });
+
   $("[data-hide]").on("click", function() {
     $("." + $(this).attr("data-hide")).hide();
   });
