@@ -11,7 +11,7 @@
           <div class="collapse navbar-collapse" id="myNavbar">
               <ul class="nav navbar-nav">
                   <li class="<?php echo ($activeTab === 'home')? 'active' : ''; ?>"><a href="index.php">Home</a></li>
-                  <li class="<?php echo ($activeTab === 'messages')? 'active' : ''; ?>"><a href="messages.php">Messages <span class='badge'>0</span></a></li>
+                  <li class="<?php echo ($activeTab === 'messages')? 'active' : ''; ?>"><a href="messages.php">Messages <span class='badge'>?</span></a></li>
                   <li class="<?php echo ($activeTab === 'broadcasts')? 'active' : ''; ?>"><a href="broadcasts.php">Broadcasts</a></li>
               </ul>
               <form class="navbar-form navbar-left" action="music.php" method="GET">
