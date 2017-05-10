@@ -186,4 +186,12 @@ $(document).ready(function() {
       },
     });
   });
+
+  $('#sendMessage-user').autocomplete({
+    source: 'api.php?action=searchUser',
+    minLength: 1,
+    select: function(event, ui) {
+      console.log("Selected: " + ui.item.value + " with id: " + ui.item.id);
+    },
+  });
 });

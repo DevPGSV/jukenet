@@ -29,6 +29,20 @@ $activeTab = 'messages';
         if (!$user) :
             echo 'Only for logged in users!';
         else:
+          ?>
+          <form method="POST">
+            <div class="input-group">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                <input name="touser" class="form-control" placeholder="User" id="sendMessage-user"><br>
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
+                <textarea name="text" class="form-control" rows="6" placeholder="Message"></textarea>
+            </div>
+            <button class="form-control" style="padding:0;background-color:lightgrey;"><span class="input-group-addon" style="max-width:95%;"><i class="glyphicon glyphicon-send"></i></span></button>
+          </form>
+          <br><br>
+          <?php
           $messages = $db->getUserMessages($user['id']);
           // echo '<pre>', print_r($messages, true), '</pre>';
           ?>

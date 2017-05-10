@@ -98,6 +98,14 @@ switch ($_GET['action']) {
       ];
     }
     break;
+  case 'searchUser':
+    $search = $_GET['term'];
+    $answer = [
+      'user1',
+      'user2',
+      'user3',
+    ];
+    break;
   default:
     $answer = [
       'status' => 'error',
