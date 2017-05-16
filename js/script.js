@@ -8,7 +8,7 @@ $(document).ready(function() {
   var apiurl = 'api.php';
 
   $("[data-messageid][data-action='popup_message']").on("click", function() {
-    var messageEntry = this;
+    var messageEntry = $(this).parent();
     $.ajax({
       type: "POST",
       url: apiurl + "?action=getMessage",
@@ -19,11 +19,11 @@ $(document).ready(function() {
       success: function(data) {
         console.log(data);
         if (data.status === 'ok') {
+          $(messageEntry).removeClass('message_not_read');
           $("#message-modal").attr('data-messageid', data.message.id);
           $("#message-modal .modal-title").text(data.message.subject);
           $("#message-modal .modal-body").html(data.message.text);
           $("#message-modal").modal();
-          $(messageEntry).removeClass('message_not_read');
           $.ajax({
             type: "POST",
             url: apiurl + "?action=readMessage",
