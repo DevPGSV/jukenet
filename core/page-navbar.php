@@ -11,8 +11,10 @@
           <div class="collapse navbar-collapse" id="myNavbar">
               <ul class="nav navbar-nav">
                   <li class="<?php echo ($activeTab === 'home')? 'active' : ''; ?>"><a href="index.php">Home</a></li>
-                  <li class="<?php echo ($activeTab === 'messages')? 'active' : ''; ?>"><a href="messages.php">Messages <span class='badge'>?</span></a></li>
+                  <li class="<?php echo ($activeTab === 'messages')? 'active' : ''; ?>"><a href="messages.php">Messages <span class='badge'><?php echo ($user !== false && $user['unread'] !== 0)? $user['unread'] : ''; ?></span></a></li>
                   <li class="<?php echo ($activeTab === 'broadcasts')? 'active' : ''; ?>"><a href="broadcasts.php">Broadcasts</a></li>
+                  <li class="<?php echo ($activeTab === 'groups')? 'active' : ''; ?>"><a href="groups.php">Groups</a></li>
+                  <li class="<?php echo ($activeTab === 'admin')? 'active' : ''; ?>"><a href="admin.php">Admin</a></li>
               </ul>
               <form class="navbar-form navbar-left" action="music.php" method="GET">
                   <div class="input-group">
@@ -84,6 +86,22 @@
             <div class="input-group">
               <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
               <input id="signup-form-password2" type="password" class="form-control" name="password2" placeholder="Repeat password">
+            </div>
+            <br>
+            <div class="input-group">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                <input id="signup-form-birthdate" type="text" class="form-control" name="birthdate" placeholder="Birthdate" title="Bithdate">
+            </div>
+            <br>
+            <div class="input-group">
+                <!--<span class="input-group-addon"><i class="glyphicon glyphicon-music"></i></span>-->
+                <select id="signup-form-musicgenres" class="selectpicker" data-live-search="true" title="Favourite Music Genres" multiple>
+                  <?php
+                  foreach($musicGenres as $genre) {
+                    echo "<option>$genre</option>";
+                  }
+                  ?>
+                </select>
             </div>
             <br>
             <div id="signup-form-messages" class="alert" style="display:none;">
