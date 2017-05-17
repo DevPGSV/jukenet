@@ -107,14 +107,77 @@ class Database {
       return $stmt->execute([$markRead, $messageid]);
     }
 
-    public function registerNewUser($username, $password, $email, $role = 'newbie') {
-        $sql = "INSERT INTO users (username, pw, email, role) VALUES(?, ?, ?, ?)";
+    public function registerNewUser($username, $password, $email, $birthTimestamp, $role = 'newbie') {
+        $sql = "INSERT INTO users (username, pw, email, role, birthTimestamp) VALUES(?, ?, ?, ?, ?)";
         $stmt = $this->db->prepare($sql);
-        if ($stmt->execute([$username, $password, $email, $role])) {
+        if ($stmt->execute([$username, $password, $email, $role, $birthTimestamp])) {
           return $this->db->lastInsertId();
         } else {
           return false;
         }
+    }
+
+    public function sendPrivateMessage($from_userid, $to_userid, $subject, $text, $timestamp, $isRead = false, $replyTo = NULL) {
+      $sql = "INSERT INTO messages (from_userid, to_userid, subject, text, timestamp, isRead, replyTo) VALUES(?, ?, ?, ?, ?, ?, ?)";
+      $stmt = $this->db->prepare($sql);
+      if ($stmt->execute([$from_userid, $to_userid, $subject, $text, $timestamp, $isRead, $replyTo])) {
+        return $this->db->lastInsertId();
+      } else {
+        return false;
+      }
+    }
+
+    public function searchUsers($pattern) {
+      $sql = "SELECT username FROM users WHERE username LIKE ?";
+      $stmt = $this->db->prepare($sql);
+      $stmt->execute([$pattern]);
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      $ans = [];
+      foreach($rows as $user) {
+        $ans[] = $user['username'];
+      }
+      return $ans;
+    }
+
+    public function getMusicGenres() {
+      $sql = "SELECT * FROM musicgenres";
+      $stmt = $this->db->prepare($sql);
+      $stmt->execute();
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      $ans = [];
+      foreach($rows as $user) {
+        $ans[] = $user['musicgenre'];
+      }
+      return $ans;
+    }
+
+    public function getUserMusicGenres($uid) {
+      $sql = "SELECT * FROM user_genre_styles WHERE user=?";
+      $stmt = $this->db->prepare($sql);
+      $stmt->execute([$uid]);
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      $ans = [];
+      foreach($rows as $user) {
+        $ans[] = $user['genre'];
+      }
+      return $ans;
+    }
+
+    public function setUserMusicGenres($uid, $musicGenres) {
+      try {
+        $this->db->beginTransaction();
+        $genre = '';
+        $stmt = $this->db->prepare("INSERT INTO user_genre_styles(user, genre) VALUES(:user, :genre)");
+        $stmt->bindValue(':user', $uid, PDO::PARAM_INT);
+        $stmt->bindParam(':genre', $genre, PDO::PARAM_STR);
+        foreach($musicGenres as $genre) {
+          $stmt->execute();
+        }
+        $this->db->commit();
+      } catch (PDOException $e) {
+        $this->db->rollback();
+        echo $e->getMessage();
+      }
     }
 
 }
