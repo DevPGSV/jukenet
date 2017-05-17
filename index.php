@@ -18,8 +18,14 @@ $activeTab = 'home';
 
   <div class="container-fluid" style="margin-top:50px">
     <div class="row">
-      <div class="col-sm-2">
-        :)
+      <div class="col-sm-12">
+        <pre><?php
+        if ($user !== false) {
+          $user['pw'] = '?';
+          print_r($user);
+          print_r($db->getUserMusicGenres($user['id']));
+        }
+        ?></pre>
       </div>
     </div>
   </div>
