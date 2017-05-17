@@ -47,8 +47,9 @@ switch ($_GET['action']) {
         'status' => 'error',
         'msg' => 'email_exists',
       ];
-    } else if ($uid = $db->registerNewUser($_POST['username'], password_hash($_POST['password'], PASSWORD_BCRYPT, ['cost' => 12]), $_POST['email'])) {
+    } else if ($uid = $db->registerNewUser($_POST['username'], password_hash($_POST['password'], PASSWORD_BCRYPT, ['cost' => 12]), $_POST['email'], DateTime::createFromFormat('d/m/Y', $_POST['birthdate'])->format("U"))) {
       $_SESSION['user'] = $uid;
+      $db->setUserMusicGenres($uid, $_POST['musicGenres']);
       $answer = [
         'status' => 'ok',
         'msg' => 'user_registered',
@@ -100,11 +101,45 @@ switch ($_GET['action']) {
     break;
   case 'searchUser':
     $search = $_GET['term'];
-    $answer = [
-      'user1',
-      'user2',
-      'user3',
-    ];
+    $answer = $db->searchUsers($search.'%');
+    if ($_GET['excludeCurrentUser'] && ($user !== false)) {
+      if (in_array($user['username'], $answer)) {
+        array_diff($answer, [$user['username']]);
+      }
+    }
+    break;
+  case 'sendMessage':
+    if (empty($_POST['touser']) || empty($_POST['subject']) || empty($_POST['text'])) {
+      $answer = [
+        'status' => 'error',
+        'msg' => 'empty_fields',
+      ];
+    } else if (!$user) {
+      $answer = [
+        'status' => 'error',
+        'msg' => 'not_logged_in',
+      ];
+    } else {
+      $timestamp = time();
+      if ($toUser = $db->getUserDataByUsername($_POST['touser'])) {
+        if($db->sendPrivateMessage($user['id'], $toUser['id'], $_POST['subject'], $_POST['text'], $timestamp, false, NULL)) {
+          $answer = [
+            'status' => 'ok',
+            'msg' => 'message_sent',
+          ];
+        } else {
+          $answer = [
+            'status' => 'error',
+            'msg' => 'unknown_error',
+          ];
+        }
+      } else {
+        $answer = [
+          'status' => 'error',
+          'msg' => 'user_not_found',
+        ];
+      }
+    }
     break;
   default:
     $answer = [
