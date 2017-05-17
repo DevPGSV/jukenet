@@ -7,6 +7,51 @@ $(document).ready(function() {
 
   var apiurl = 'api.php';
 
+  $("#signup-form-birthdate").datepicker({
+    changeMonth: true,
+    changeYear: true,
+    dateFormat: 'dd/mm/yy',
+    yearRange: "-150:+0",
+    setDate: new Date(),
+  });
+
+  $('.selectpicker').selectpicker();
+
+  $("#sendMessage-form").submit(function(event) {
+    event.preventDefault();
+
+    $.ajax({
+      type: "POST",
+      url: apiurl + "?action=sendMessage",
+      dataType: 'json',
+      data: {
+        touser: $('#sendMessage-user').val(),
+        subject: $('#sendMessage-subject').val(),
+        text: $('#sendMessage-text').val(),
+      },
+      success: function(data) {
+        if (data['status'] === 'ok') {
+          $('#sendMessage-alert').removeClass('alert-danger');
+          $('#sendMessage-alert').addClass('alert-success');
+          $('#sendMessage-alert').html('<strong>Success!</strong> ' + data['msg']);
+
+          //$('#sendMessage-user').val();
+          $('#sendMessage-subject').val('');
+          $('#sendMessage-text').val('');
+        } else {
+          $('#sendMessage-alert').removeClass('alert-success');
+          $('#sendMessage-alert').addClass('alert-danger');
+          $('#sendMessage-alert').html('<strong>Error!</strong> ' + data['msg']);
+        }
+        $('#sendMessage-alert').show("slow");
+        setTimeout(function() {
+          $('#sendMessage-alert').hide("fast");
+        }, 2500);
+      },
+    });
+
+  });
+
   $("[data-messageid][data-action='popup_message']").on("click", function() {
     var messageEntry = $(this).parent();
     $.ajax({
@@ -19,20 +64,29 @@ $(document).ready(function() {
       success: function(data) {
         console.log(data);
         if (data.status === 'ok') {
-          $(messageEntry).removeClass('message_not_read');
+
           $("#message-modal").attr('data-messageid', data.message.id);
           $("#message-modal .modal-title").text(data.message.subject);
           $("#message-modal .modal-body").html(data.message.text);
+          if ($(messageEntry).hasClass('message_received')) {
+            $('#message-modal-markasnotread').show();
+          } else {
+            $('#message-modal-markasnotread').hide();
+          }
           $("#message-modal").modal();
-          $.ajax({
-            type: "POST",
-            url: apiurl + "?action=readMessage",
-            dataType: 'json',
-            data: {
-              messageid: $(messageEntry).attr('data-messageid'),
-              markRead: true,
-            },
-          });
+
+          if ($(messageEntry).hasClass('message_not_read')) {
+            $(messageEntry).removeClass('message_not_read');
+            $.ajax({
+              type: "POST",
+              url: apiurl + "?action=readMessage",
+              dataType: 'json',
+              data: {
+                messageid: $(messageEntry).attr('data-messageid'),
+                markRead: true,
+              },
+            });
+          }
         }
       },
     });
@@ -130,6 +184,8 @@ $(document).ready(function() {
         'username': $("#signup-form-username").val(),
         'email': $("#signup-form-email").val(),
         'password': $("#signup-form-password").val(),
+        'birthdate': $("#signup-form-birthdate").val(),
+        'musicGenres': $("#signup-form-musicgenres").val(),
       },
       success: function(data) {
         if (data['status'] === 'ok') {
@@ -188,8 +244,8 @@ $(document).ready(function() {
   });
 
   $('#sendMessage-user').autocomplete({
-    source: 'api.php?action=searchUser',
-    minLength: 1,
+    source: 'api.php?action=searchUser&excludeCurrentUser',
+    minLength: 0,
     select: function(event, ui) {
       console.log("Selected: " + ui.item.value + " with id: " + ui.item.id);
     },
