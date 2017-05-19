@@ -1,6 +1,8 @@
 <?php
 require_once(__DIR__ . '/core/init.php');
 
+header('Content-Type: application/json');
+
 $answer = [
   'status' => 'error',
   'msg' => 'unkown error',
@@ -140,6 +142,9 @@ switch ($_GET['action']) {
         ];
       }
     }
+    break;
+  case 'editUser':
+    
     break;
   default:
     $answer = [

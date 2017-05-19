@@ -11,7 +11,7 @@ $activeTab = 'messages';
   require_once('core/page-head.php');
   ?>
   <style>
-  .message_not_read {
+  .message_received.message_not_read {
     font-weight: bold;
   }
   </style>

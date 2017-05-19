@@ -17,6 +17,8 @@
 <!-- (Optional) Latest compiled and minified JavaScript translation files -->
 <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/i18n/defaults-*.min.js"></script>-->
 
+<script src="libs/jquery-tabledit-1.2.3/jquery.tabledit.js"></script>
+
 
 <script src="js/script.js"></script>
 

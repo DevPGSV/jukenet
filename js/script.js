@@ -7,6 +7,39 @@ $(document).ready(function() {
 
   var apiurl = 'api.php';
 
+  if ($('.editableTable').length > 0) {
+    $('.editableTable').Tabledit({
+      url: 'api.php?action=editUser',
+      columns: {
+          identifier: [0, 'id'],
+          editable: [[2, 'email'], [3, 'role', '{"admin": "Admin", "melomaniac": "Melomaniac", "Newbie": "newbie"}', [4, 'birthdate']]]
+      },
+      onDraw: function() {
+          console.log('onDraw()');
+      },
+      onSuccess: function(data, textStatus, jqXHR) {
+          console.log('onSuccess(data, textStatus, jqXHR)');
+          console.log(data);
+          console.log(textStatus);
+          console.log(jqXHR);
+      },
+      onFail: function(jqXHR, textStatus, errorThrown) {
+          console.log('onFail(jqXHR, textStatus, errorThrown)');
+          console.log(jqXHR);
+          console.log(textStatus);
+          console.log(errorThrown);
+      },
+      onAlways: function() {
+          console.log('onAlways()');
+      },
+      onAjax: function(action, serialize) {
+          console.log('onAjax(action, serialize)');
+          console.log(action);
+          console.log(serialize);
+      },
+    });
+  }
+
   $("#signup-form-birthdate").datepicker({
     changeMonth: true,
     changeYear: true,
