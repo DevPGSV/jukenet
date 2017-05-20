@@ -38,6 +38,13 @@ class Database {
       return $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getAllGroups() {
+      $sql = "SELECT * FROM groups";
+      $stmt = $this->db->prepare($sql);
+      $stmt->execute();
+      return $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function getUserDataByUsername($user) {
         $sql = "SELECT * FROM users WHERE username=?";
         $stmt = $this->db->prepare($sql);
@@ -185,6 +192,12 @@ class Database {
         $this->db->rollback();
         echo $e->getMessage();
       }
+    }
+
+    public function editUserData($uid, $email, $role, $birthTimestamp) {
+      $sql = "UPDATE users SET email=?,role=?,birthTimestamp=? WHERE id=?";
+      $stmt = $this->db->prepare($sql);
+      return $stmt->execute([$email, $role, $birthTimestamp, $uid]);
     }
 
 }

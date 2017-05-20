@@ -16,6 +16,7 @@
                   <li class="<?php echo ($activeTab === 'groups')? 'active' : ''; ?>"><a href="groups.php">Groups</a></li>
                   <li class="<?php echo ($activeTab === 'admin')? 'active' : ''; ?>"><a href="admin.php">Admin</a></li>
               </ul>
+              <!--
               <form class="navbar-form navbar-left" action="music.php" method="GET">
                   <div class="input-group">
                       <input type="text" id="navbar-searchform-field" class="form-control" name="search" placeholder="Search Music" value="<?php echo empty($_GET['search']) ? '' : htmlentities($_GET['search']); ?>" style="width: 300px;">
@@ -29,6 +30,7 @@
                       </div>
                   </div>
               </form>
+              -->
 
               <ul class="nav navbar-nav navbar-right">
                 <?php

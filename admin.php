@@ -4,6 +4,7 @@ $pageTitle = 'Admin';
 $activeTab = 'admin';
 
 $users = $db->getAllUsers();
+$groups= $db->getAllGroups();
 
 ?><!DOCTYPE html>
 <html lang="en">
@@ -31,15 +32,38 @@ $users = $db->getAllUsers();
           </ul>
           <div class="tab-content">
             <div id="admin_groups" class="tab-pane fade in active">
-              Groups
+
+
+              <div class="table-responsive">
+                <table class="table table-striped table-bordered table-hover" style="table-layout:auto;" id="admin_managegroupstable">
+                  <tr>
+                    <th class="col-sm-4">Name</th>
+                    <th class="col-sm-4">Music Genre</th>
+                    <th class="col-sm-4">Age Range</th>
+                  </tr>
+                  <?php
+                  foreach($groups as $i => $g) {
+                    echo "<tr id='$i'>
+                      <td>{$g['name']}</td>
+                      <td>{$g['musicgenre']}</td>
+                      <td>{$g['minage']} - {$g['maxage']}</td>
+                    </tr>";
+                  }
+                  ?>
+
+                </table>
+              </div>
+
+
+
             </div>
             <div id="admin_users" class="tab-pane fade">
               <div class="table-responsive">
                 <table class="table table-striped table-bordered table-hover editableTable" style="table-layout:auto;" id="admin_manageuserstable">
                   <tr>
                     <th class="col-sm-1">UID</th>
-                    <th class="col-sm-8">Username</th>
-                    <th class="col-sm-2">Email</th>
+                    <th class="col-sm-3">Username</th>
+                    <th class="col-sm-4">Email</th>
                     <th class="col-sm-2">Role</th>
                     <th class="col-sm-2">Birthdate</th>
                   </tr>
