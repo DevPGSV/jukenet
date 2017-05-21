@@ -14,7 +14,11 @@
                   <li class="<?php echo ($activeTab === 'messages')? 'active' : ''; ?>"><a href="messages.php">Messages <span class='badge'><?php echo ($user !== false && $user['unread'] !== 0)? $user['unread'] : ''; ?></span></a></li>
                   <li class="<?php echo ($activeTab === 'broadcasts')? 'active' : ''; ?>"><a href="broadcasts.php">Broadcasts</a></li>
                   <li class="<?php echo ($activeTab === 'groups')? 'active' : ''; ?>"><a href="groups.php">Groups</a></li>
-                  <li class="<?php echo ($activeTab === 'admin')? 'active' : ''; ?>"><a href="admin.php">Admin</a></li>
+                  <?php
+                  if ($user !== false && $user['role'] === 'admin') {
+                    echo "<li class=" . (($activeTab === 'admin')? 'active' : '') . "><a href=\"admin.php\">Admin</a></li>";
+                  }
+                  ?>
               </ul>
               <!--
               <form class="navbar-form navbar-left" action="music.php" method="GET">
