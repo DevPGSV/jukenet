@@ -81,6 +81,12 @@ class Database {
         }
     }
 
+    public function deleteUser($uid) {
+      $sql = "DELETE FROM users WHERE id=?";
+      $stmt = $this->db->prepare($sql);
+      return $stmt->execute([$uid]);
+    }
+
     public function getUserMessages($userid) {
         $sql = "SELECT
             messages.id, messages.subject, messages.text, messages.timestamp, messages.isRead,
@@ -97,6 +103,18 @@ class Database {
         $stmt->execute([$userid,$userid]);
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $rows;
+    }
+
+    public function getUserGroupMessages($userid) {
+      $sql = "SELECT group_messages.id, group_messages.from_user, group_messages.to_group, group_messages.text
+        FROM group_messages
+        JOIN user_group_replation ON user_group_replation.groupname = group_messages.to_group
+        WHERE user_group_replation.user = ?
+        ";
+      $stmt = $this->db->prepare($sql);
+      $stmt->execute([$userid]);
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      return $rows;
     }
 
     public function getMessageById($messageid) {
@@ -177,27 +195,92 @@ class Database {
       return $ans;
     }
 
+    public function clearUserMusicGenres($uid) {
+      $stmt = $this->db->prepare("DELETE FROM user_genre_styles WHERE user=?");
+      return $stmt->execute([$uid]);
+    }
+
     public function setUserMusicGenres($uid, $musicGenres) {
+      if (!$this->clearUserMusicGenres($uid)) return false;
+      $isOk = false;
       try {
         $this->db->beginTransaction();
         $genre = '';
-        $stmt = $this->db->prepare("INSERT INTO user_genre_styles(user, genre) VALUES(:user, :genre)");
+        $stmt = $this->db->prepare("INSERT IGNORE INTO user_genre_styles(user, genre) VALUES(:user, :genre)");
         $stmt->bindValue(':user', $uid, PDO::PARAM_INT);
         $stmt->bindParam(':genre', $genre, PDO::PARAM_STR);
         foreach($musicGenres as $genre) {
           $stmt->execute();
         }
         $this->db->commit();
+        $isOk = true;
       } catch (PDOException $e) {
         $this->db->rollback();
-        echo $e->getMessage();
+        //echo $e->getMessage();
       }
+      return $isOk;
     }
 
     public function editUserData($uid, $email, $role, $birthTimestamp) {
       $sql = "UPDATE users SET email=?,role=?,birthTimestamp=? WHERE id=?";
       $stmt = $this->db->prepare($sql);
       return $stmt->execute([$email, $role, $birthTimestamp, $uid]);
+    }
+
+    public function getGroupData($gname) {
+      $sql = "SELECT * FROM groups WHERE name=?";
+      $stmt = $this->db->prepare($sql);
+      $stmt->execute([$gname]);
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      if (count($rows) === 1) return $rows[0];
+      return false;
+    }
+
+    public function addGroup($name, $musicGenre, $minAge, $maxAge) {
+      $sql = "INSERT INTO groups (name, musicgenre, minage, maxage) VALUES(?, ?, ?, ?)";
+      $stmt = $this->db->prepare($sql);
+      if ($stmt->execute([$name, $musicGenre, $minAge, $maxAge])) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    public function addUsersToGroup($gname) {
+      $sql = "INSERT IGNORE INTO user_group_replation(user, groupname)
+        SELECT DISTINCT users.id, :groupname 'groupname'
+        FROM users
+        JOIN user_genre_styles ON users.id = user_genre_styles.user
+        WHERE
+          user_genre_styles.genre = (SELECT DISTINCT musicgenre FROM groups WHERE name = :groupname2) AND
+          ((UNIX_TIMESTAMP() - users.birthTimestamp)/60/60/24/365) BETWEEN
+            (SELECT DISTINCT minAge FROM groups WHERE groups.name = :groupname3) AND
+            (SELECT DISTINCT maxAge FROM groups WHERE groups.name = :groupname4)
+        ";
+      $stmt = $this->db->prepare($sql);
+      $stmt->bindValue(':groupname',  $gname, PDO::PARAM_STR);
+      $stmt->bindValue(':groupname2', $gname, PDO::PARAM_STR);
+      $stmt->bindValue(':groupname3', $gname, PDO::PARAM_STR);
+      $stmt->bindValue(':groupname4', $gname, PDO::PARAM_STR);
+      return $stmt->execute();
+    }
+
+    public function deleteGroup($gname) {
+      $sql = "DELETE FROM groups WHERE name=?";
+      $stmt = $this->db->prepare($sql);
+      return $stmt->execute([$gname]);
+    }
+
+    public function getUserGroups($uid) {
+      $sql = "SELECT * FROM user_group_replation WHERE user=?";
+      $stmt = $this->db->prepare($sql);
+      $stmt->execute([$uid]);
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      $ans = [];
+      foreach($rows as $row) {
+        $ans[] = $row['groupname'];
+      }
+      return $ans;
     }
 
 }

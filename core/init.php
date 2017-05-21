@@ -22,6 +22,15 @@ if ($user !== false) {
       $user['unread']++;
     }
   }
+
+  $user['groups'] = $db->getUserGroups($user['id']);
+  $gmessages = [];
+  foreach ($db->getUserGroupMessages($user['id']) as $gmessage) {
+    if (!isset($gmessages[$gmessage['group_messages.to_group']])) {
+      $gmessages[$gmessage['group_messages.to_group']] = [];
+    }
+    $gmessages[$gmessage['group_messages.to_group']] = $gmessage;
+  }
 }
 
 $musicGenres = $db->getMusicGenres();

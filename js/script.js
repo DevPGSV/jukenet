@@ -7,18 +7,78 @@ $(document).ready(function() {
 
   var apiurl = 'api.php';
 
-  $('#admin_managegroupstable').Tabledit({
-    editButton: false,
-    //deleteButton: true,
-    columns: {
-      identifier: [0, 'name'],
-      edit: [],
-    }
+  $('#choosemusicgenres-form-musicgenres').on('hidden.bs.select', function(e) {
+    $.ajax({
+      type: "POST",
+      url: apiurl + "?action=setUserMusicGenres",
+      dataType: 'json',
+      data: {
+        musicGenres: $('#choosemusicgenres-form-musicgenres').val(),
+      },
+      success: function(data) {
+        if (data['status'] === 'ok') {
+          location.reload();
+        } else {
+          alert(data['msg']);
+        }
+      },
+    });
   });
 
-  if ($('.editableTable').length > 0) {
-    $('.editableTable').Tabledit({
+  if ($('#admin_managegroupstable').length > 0) {
+    $('#admin_managegroupstable').Tabledit({
+      url: 'api.php?action=editGroup',
+      editButton: false,
+      restoreButton: false,
+      columns: {
+        identifier: [0, 'name'],
+        editable: []
+      },
+    });
+  }
+
+  $("#addgroup-form-age").slider({
+    range: true,
+    min: 1,
+    max: 100,
+    values: [20, 30],
+    slide: function(event, ui) {
+      $("#addgroup-form-age").find('.ui-slider-range').html(ui.values[0] + " - " + ui.values[1]);
+      $("#addgroup-form-age-d0").html(ui.values[0]);
+      $("#addgroup-form-age-d1").html(ui.values[1]);
+    }
+  });
+  $("#addgroup-form-age").find('.ui-slider-range').html($("#addgroup-form-age").slider("values", 0) + " - " + $("#addgroup-form-age").slider("values", 1));
+  $("#addgroup-form-age-d0").html($("#addgroup-form-age").slider("values", 0));
+  $("#addgroup-form-age-d1").html($("#addgroup-form-age").slider("values", 1));
+
+  $('#addgroup-form').submit(function(event) {
+    event.preventDefault();
+
+    $.ajax({
+      type: "POST",
+      url: apiurl + "?action=addGroup",
+      dataType: 'json',
+      data: {
+        groupname: $('#addgroup-form-groupname').val(),
+        musicgenre: $('#addgroup-form-musicgenres').val(),
+        minage: $("#addgroup-form-age").slider("values", 0),
+        maxage: $("#addgroup-form-age").slider("values", 1),
+      },
+      success: function(data) {
+        if (data['status'] === 'ok') {
+          $('#admin_managegroupstable > tbody:last-child').append('<tr><td>' + data['groupdata']['name'] + '</td><td>' + data['groupdata']['musicgenre'] + '</td><td>' + data['groupdata']['minage'] + ' - ' + data['groupdata']['maxage'] + '</td><td style="white-space: nowrap; width: 1%;"><div class="tabledit-toolbar btn-toolbar" style="text-align: left;"> <div class="btn-group btn-group-sm" style="float: none;"><button type="button" class="tabledit-delete-button btn btn-sm btn-default" style="float: none;"><span class="glyphicon glyphicon-trash"></span></button></div> <button type="button" class="tabledit-confirm-button btn btn-sm btn-danger" style="display: none; float: none;">Confirm</button></div></td></tr>');
+        } else {
+          alert(data['msg']);
+        }
+      },
+    });
+  });
+
+  if ($('#admin_manageuserstable').length > 0) {
+    $('#admin_manageuserstable').Tabledit({
       url: 'api.php?action=editUser',
+      restoreButton: false,
       columns: {
         identifier: [0, 'id'],
         editable: [
@@ -27,31 +87,6 @@ $(document).ready(function() {
           [4, 'birthdate'],
         ]
       },
-      /*
-      onDraw: function() {
-        console.log('onDraw()');
-      },
-      onSuccess: function(data, textStatus, jqXHR) {
-        console.log('onSuccess(data, textStatus, jqXHR)');
-        console.log(data);
-        console.log(textStatus);
-        console.log(jqXHR);
-      },
-      onFail: function(jqXHR, textStatus, errorThrown) {
-        console.log('onFail(jqXHR, textStatus, errorThrown)');
-        console.log(jqXHR);
-        console.log(textStatus);
-        console.log(errorThrown);
-      },
-      onAlways: function() {
-        console.log('onAlways()');
-      },
-      onAjax: function(action, serialize) {
-        console.log('onAjax(action, serialize)');
-        console.log(action);
-        console.log(serialize);
-      },
-      */
     });
   }
 
