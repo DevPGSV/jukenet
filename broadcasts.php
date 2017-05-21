@@ -32,7 +32,6 @@ $activeTab = 'broadcasts';
             <button class="form-control" style="padding:0;background-color:lightgrey;"><span class="input-group-addon" style="max-width:95%;"><i class="glyphicon glyphicon-send"></i></span></button>
             <div class="alert alert-success" style="display:none;" id="sendBroadcast-alert">
             </div>
-
           </form>
           <br><br>
           <div class="table-responsive">

@@ -165,7 +165,12 @@ switch ($_GET['action']) {
     }
     break;
   case 'sendGroupMessage':
-    if ($db->sendGroupMessage($user['id'], $_POST['group'], $_POST['text'])) {
+    if (!$user) {
+      $answer = [
+        'status' => 'error',
+        'msg' => 'not_logged_in',
+      ];
+    } else if ($db->sendGroupMessage($user['id'], $_POST['group'], $_POST['text'])) {
       $answer = [
         'status' => 'ok',
         'msg' => 'group_message_sent',
@@ -178,102 +183,156 @@ switch ($_GET['action']) {
     }
     break;
   case 'editUser':
-    $uid = $_POST['id'];
-    if ($_POST['action'] === 'delete') {
-      if ($db->deleteUser($uid)) {
-        $answer = [
-          'status' => 'ok',
-          'msg' => 'user_deleted',
-        ];
-      } else {
-        http_response_code(409);
-        $answer = [
-          'status' => 'error',
-          'msg' => 'error_deleting_user',
-        ];
-      }
-    } else if ($_POST['action'] === 'edit') {
-      $uemail = $_POST['email'];
-      $urole = $_POST['role'];
-      $ubirthdate = $_POST['birthdate'];
-      $birthdate = DateTime::createFromFormat('d/m/Y', $ubirthdate);
-      if ($birthdate === false) {
-        http_response_code(409);
-        $answer = [
-          'status' => 'error',
-          'msg' => 'invalid_date',
-        ];
-      } else {
-        $birthTimestamp = $birthdate->format("U");
-        try {
-          $status = $db->editUserData($uid, $uemail, $urole, $ubirthdate);
-        } catch(Exception $e) {
-          $status = false;
-        }
-        if ($status) {
+    if (!$user) {
+      $answer = [
+        'status' => 'error',
+        'msg' => 'not_logged_in',
+      ];
+    } else if ($user['role'] !== 'admin') {
+      $answer = [
+        'status' => 'error',
+        'msg' => 'not_admin',
+      ];
+    } else {
+      $uid = $_POST['id'];
+      if ($_POST['action'] === 'delete') {
+        if ($db->deleteUser($uid)) {
           $answer = [
             'status' => 'ok',
-            'msg' => 'user_edited',
+            'msg' => 'user_deleted',
           ];
         } else {
           http_response_code(409);
           $answer = [
             'status' => 'error',
-            'msg' => 'user_not_edited',
+            'msg' => 'error_deleting_user',
           ];
+        }
+      } else if ($_POST['action'] === 'edit') {
+        $uemail = $_POST['email'];
+        $urole = $_POST['role'];
+        $ubirthdate = $_POST['birthdate'];
+        $birthdate = DateTime::createFromFormat('d/m/Y', $ubirthdate);
+        if ($birthdate === false) {
+          http_response_code(409);
+          $answer = [
+            'status' => 'error',
+            'msg' => 'invalid_date',
+          ];
+        } else {
+          $birthTimestamp = $birthdate->format("U");
+          try {
+            $status = $db->editUserData($uid, $uemail, $urole, $ubirthdate);
+          } catch(Exception $e) {
+            $status = false;
+          }
+          if ($status) {
+            $answer = [
+              'status' => 'ok',
+              'msg' => 'user_edited',
+            ];
+          } else {
+            http_response_code(409);
+            $answer = [
+              'status' => 'error',
+              'msg' => 'user_not_edited',
+            ];
+          }
         }
       }
     }
     break;
   case 'addGroup':
-    $gname = $_POST['groupname'];
-    $gmusicgenre = $_POST['musicgenre'];
-    $gminage = $_POST['minage'];
-    $gmaxage = $_POST['maxage'];
-    if ($db->getGroupData($gname) !== false) {
+    if (!$user) {
       $answer = [
         'status' => 'error',
-        'msg' => 'group_name_exists',
+        'msg' => 'not_logged_in',
       ];
-    } elseif ($db->addGroup($gname, $gmusicgenre, $gminage, $gmaxage)) {
-      if ($db->addUsersToGroup($gname)) {
+    } else if ($user['role'] !== 'admin') {
+      $answer = [
+        'status' => 'error',
+        'msg' => 'not_admin',
+      ];
+    } else {
+      $gname = $_POST['groupname'];
+      $gmusicgenre = $_POST['musicgenre'];
+      $gminage = $_POST['minage'];
+      $gmaxage = $_POST['maxage'];
+      if ($db->getGroupData($gname) !== false) {
         $answer = [
-          'status' => 'ok',
-          'msg' => 'group_added',
-          'groupdata' => [
-            'name' => $gname,
-            'musicgenre' => $gmusicgenre,
-            'minage' => $gminage,
-            'maxage' => $gmaxage,
-          ]
+          'status' => 'error',
+          'msg' => 'group_name_exists',
         ];
+      } elseif ($db->addGroup($gname, $gmusicgenre, $gminage, $gmaxage)) {
+        if ($db->addUsersToGroup($gname)) {
+          $answer = [
+            'status' => 'ok',
+            'msg' => 'group_added',
+            'groupdata' => [
+              'name' => $gname,
+              'musicgenre' => $gmusicgenre,
+              'minage' => $gminage,
+              'maxage' => $gmaxage,
+            ]
+          ];
+        } else {
+          $answer = [
+            'status' => 'error',
+            'msg' => 'users_not_added_to_group',
+          ];
+        }
       } else {
         $answer = [
           'status' => 'error',
-          'msg' => 'users_not_added_to_group',
+          'msg' => 'group_not_added',
         ];
       }
-    } else {
-      $answer = [
-        'status' => 'error',
-        'msg' => 'group_not_added',
-      ];
     }
     break;
   case 'editGroup':
-    if ($_POST['action'] === 'delete') {
-      $gname = $_POST['name'];
-      if ($db->deleteGroup($gname)) {
-        $answer = [
-          'status' => 'ok',
-          'msg' => 'group_ndeleted',
-        ];
-      } else {
-        $answer = [
-          'status' => 'error',
-          'msg' => 'group_not_deleted',
-        ];
+    if (!$user) {
+      $answer = [
+        'status' => 'error',
+        'msg' => 'not_logged_in',
+      ];
+    } else if ($user['role'] !== 'admin') {
+      $answer = [
+        'status' => 'error',
+        'msg' => 'not_admin',
+      ];
+    } else {
+      if ($_POST['action'] === 'delete') {
+        $gname = $_POST['name'];
+        if ($db->deleteGroup($gname)) {
+          $answer = [
+            'status' => 'ok',
+            'msg' => 'group_ndeleted',
+          ];
+        } else {
+          $answer = [
+            'status' => 'error',
+            'msg' => 'group_not_deleted',
+          ];
+        }
       }
+    }
+    break;
+  case 'sendBroadcast':
+  if (!$user) {
+    $answer = [
+      'status' => 'error',
+      'msg' => 'not_logged_in',
+    ];
+  } else if ($db->sendBroadcast($user['id'], $_POST['text'], time())) {
+      $answer = [
+        'status' => 'ok',
+        'msg' => 'broadcast_sent',
+      ];
+    } else {
+      $answer = [
+        'status' => 'error',
+        'msg' => 'broadcast_not_sent',
+      ];
     }
     break;
   default:

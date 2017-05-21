@@ -116,6 +116,10 @@ $(document).ready(function() {
           //$('#sendMessage-user').val();
           $('#sendMessage-subject').val('');
           $('#sendMessage-text').val('');
+
+          setTimeout(function() {
+            location.reload();
+          }, 2500);
         } else {
           $('#sendMessage-alert').removeClass('alert-success');
           $('#sendMessage-alert').addClass('alert-danger');
@@ -129,8 +133,6 @@ $(document).ready(function() {
     });
 
   });
-
-
 
   $(".sendgroupmessage-form").submit(function(event) {
     event.preventDefault();
@@ -167,11 +169,38 @@ $(document).ready(function() {
         }, 2500);
       },
     });
-
-
   });
 
-
+  $("#sendBroadcast-form").submit(function(event) {
+    event.preventDefault();
+    $.ajax({
+      type: "POST",
+      url: apiurl + "?action=sendBroadcast",
+      dataType: 'json',
+      data: {
+        text: $('#sendBroadcast-text').val(),
+      },
+      success: function(data) {
+        if (data['status'] === 'ok') {
+          $('#sendBroadcast-alert').removeClass('alert-danger');
+          $('#sendBroadcast-alert').addClass('alert-success');
+          $('#sendBroadcast-alert').html('<strong>Success!</strong> ' + data['msg']);
+          $('#sendBroadcast-text').val('');
+          setTimeout(function() {
+            location.reload();
+          }, 2500);
+        } else {
+          $('#sendBroadcast-alert').removeClass('alert-success');
+          $('#sendBroadcast-alert').addClass('alert-danger');
+          $('#sendBroadcast-alert').html('<strong>Error!</strong> ' + data['msg']);
+        }
+        $('#sendBroadcast-alert').show("slow");
+        setTimeout(function() {
+          $('#sendBroadcast-alert').hide("fast");
+        }, 2500);
+      },
+    });
+  });
 
 
   $("[data-messageid][data-action='popup_message']").on("click", function() {

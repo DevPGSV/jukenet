@@ -181,6 +181,16 @@ class Database {
       }
     }
 
+    public function sendBroadcast($from_user, $text, $timestamp) {
+      $sql = "INSERT INTO broadcasts (from_user, text, timestamp) VALUES(?, ?, ?)";
+      $stmt = $this->db->prepare($sql);
+      if ($stmt->execute([$from_user, $text, $timestamp])) {
+        return $this->db->lastInsertId();
+      } else {
+        return false;
+      }
+    }
+
     public function searchUsers($pattern) {
       $sql = "SELECT username FROM users WHERE username LIKE ?";
       $stmt = $this->db->prepare($sql);
