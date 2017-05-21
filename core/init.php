@@ -26,10 +26,11 @@ if ($user !== false) {
   $user['groups'] = $db->getUserGroups($user['id']);
   $gmessages = [];
   foreach ($db->getUserGroupMessages($user['id']) as $gmessage) {
-    if (!isset($gmessages[$gmessage['group_messages.to_group']])) {
-      $gmessages[$gmessage['group_messages.to_group']] = [];
+    if (!isset($gmessages[$gmessage['to_group']])) {
+      $gmessages[$gmessage['to_group']] = [];
     }
-    $gmessages[$gmessage['group_messages.to_group']] = $gmessage;
+    $gmessages[$gmessage['to_group']][] = $gmessage;
+
   }
 }
 

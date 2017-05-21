@@ -5,7 +5,7 @@ header('Content-Type: application/json');
 
 $answer = [
   'status' => 'error',
-  'msg' => 'unkown error',
+  'msg' => 'unkown_error',
 ];
 
 if (empty($_GET['action'])) {
@@ -162,6 +162,19 @@ switch ($_GET['action']) {
           'msg' => 'user_not_found',
         ];
       }
+    }
+    break;
+  case 'sendGroupMessage':
+    if ($db->sendGroupMessage($user['id'], $_POST['group'], $_POST['text'])) {
+      $answer = [
+        'status' => 'ok',
+        'msg' => 'group_message_sent',
+      ];
+    } else {
+      $answer = [
+        'status' => 'error',
+        'msg' => 'group_message_not_sent',
+      ];
     }
     break;
   case 'editUser':

@@ -106,9 +106,10 @@ class Database {
     }
 
     public function getUserGroupMessages($userid) {
-      $sql = "SELECT group_messages.id, group_messages.from_user, group_messages.to_group, group_messages.text
+      $sql = "SELECT group_messages.id, users.username 'from_username', users.id 'from_id', group_messages.to_group, group_messages.text
         FROM group_messages
         JOIN user_group_replation ON user_group_replation.groupname = group_messages.to_group
+        JOIN users ON users.id = group_messages.from_user
         WHERE user_group_replation.user = ?
         ";
       $stmt = $this->db->prepare($sql);
@@ -153,6 +154,16 @@ class Database {
       $sql = "INSERT INTO messages (from_userid, to_userid, subject, text, timestamp, isRead, replyTo) VALUES(?, ?, ?, ?, ?, ?, ?)";
       $stmt = $this->db->prepare($sql);
       if ($stmt->execute([$from_userid, $to_userid, $subject, $text, $timestamp, $isRead, $replyTo])) {
+        return $this->db->lastInsertId();
+      } else {
+        return false;
+      }
+    }
+
+    public function sendGroupMessage($from_userid, $to_group, $text) {
+      $sql = "INSERT INTO group_messages (from_user, to_group, text) VALUES(?, ?, ?)";
+      $stmt = $this->db->prepare($sql);
+      if ($stmt->execute([$from_userid, $to_group, $text])) {
         return $this->db->lastInsertId();
       } else {
         return false;

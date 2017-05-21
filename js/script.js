@@ -135,6 +135,50 @@ $(document).ready(function() {
 
   });
 
+
+
+  $(".sendgroupmessage-form").submit(function(event) {
+    event.preventDefault();
+    form = $(this);
+
+    $.ajax({
+      type: "POST",
+      url: apiurl + "?action=sendGroupMessage",
+      dataType: 'json',
+      data: {
+        group: form.find('.sendgroupmessage-group').val(),
+        text: form.find('.sendgroupmessage-text').val(),
+      },
+      success: function(data) {
+        if (data['status'] === 'ok') {
+          form.find('.sendgroupmessage-alert').removeClass('alert-danger');
+          form.find('.sendgroupmessage-alert').addClass('alert-success');
+          form.find('.sendgroupmessage-alert').html('<strong>Success!</strong> ' + data['msg']);
+
+          form.find('.sendgroupmessage-group').val('');
+          form.find('.sendgroupmessage-text').val('');
+
+          setTimeout(function() {
+            location.reload();
+          }, 2500);
+        } else {
+          form.find('.sendgroupmessage-alert').removeClass('alert-success');
+          form.find('.sendgroupmessage-alert').addClass('alert-danger');
+          form.find('.sendgroupmessage-alert').html('<strong>Error!</strong> ' + data['msg']);
+        }
+        form.find('.sendgroupmessage-alert').show("slow");
+        setTimeout(function() {
+          form.find('.sendgroupmessage-alert').hide("fast");
+        }, 2500);
+      },
+    });
+
+
+  });
+
+
+
+
   $("[data-messageid][data-action='popup_message']").on("click", function() {
     var messageEntry = $(this).parent();
     $.ajax({
