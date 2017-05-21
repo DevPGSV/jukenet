@@ -1,8 +1,3 @@
-function checkMessages() {
-
-}
-
-
 $(document).ready(function() {
 
   var apiurl = 'api.php';
