@@ -1,0 +1,19 @@
+#maincontainer {
+  margin-top: 60px;
+}
+
+body.modal-open .ui-datepicker {
+  z-index: 1200 !important;
+}
+
+#addgroup-form-age {
+  height: 30px;
+}
+
+#addgroup-form-age>.ui-slider-handle {
+  height: 35px;
+}
+
+#addgroup-form-age>.ui-slider-range {
+  text-align: center;
+}

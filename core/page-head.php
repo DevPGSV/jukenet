@@ -17,21 +17,4 @@
 <script src="libs/jquery-tabledit-1.2.3/jquery.tabledit.js"></script>
 
 <script src="js/script.js"></script>
-
-<style>
-body.modal-open .ui-datepicker {
-    z-index: 1200 !important;
-}
-
-#addgroup-form-age {
-  height: 30px;
-}
-
-#addgroup-form-age > .ui-slider-handle {
-  height: 35px;
-}
-
-#addgroup-form-age > .ui-slider-range {
-  text-align: center;
-}
-</style>
+<link rel="stylesheet" href="css/style.css">

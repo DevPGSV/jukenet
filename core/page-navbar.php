@@ -97,7 +97,7 @@
             <br>
             <div class="input-group">
                 <!--<span class="input-group-addon"><i class="glyphicon glyphicon-music"></i></span>-->
-                <select id="signup-form-musicgenres" class="selectpicker" data-live-search="true" title="Favourite Music Genres" multiple>
+                <select id="signup-form-musicgenres" class="selectpicker" data-live-search="true" title="Favourite Music Genres" multiple data-selected-text-format="count > 10" show-tick data-actions-box="true" data-header="Favourite Music Genres">
                   <?php
                   foreach($musicGenres as $genre) {
                     echo "<option>$genre</option>";

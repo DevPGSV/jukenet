@@ -118,6 +118,17 @@ class Database {
       return $rows;
     }
 
+    public function getBroadcasts() {
+      $sql = "SELECT broadcasts.id, users.username 'from_username', users.id 'from_id', broadcasts.text, broadcasts.timestamp
+        FROM broadcasts
+        JOIN users ON users.id = broadcasts.from_user
+        ";
+      $stmt = $this->db->prepare($sql);
+      $stmt->execute();
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      return $rows;
+    }
+
     public function getMessageById($messageid) {
       $sql = "SELECT
           messages.id, messages.subject, messages.text, messages.timestamp, messages.isRead,

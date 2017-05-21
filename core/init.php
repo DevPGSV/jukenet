@@ -30,8 +30,8 @@ if ($user !== false) {
       $gmessages[$gmessage['to_group']] = [];
     }
     $gmessages[$gmessage['to_group']][] = $gmessage;
-
   }
 }
 
+$broadcasts = $db->getBroadcasts();
 $musicGenres = $db->getMusicGenres();
