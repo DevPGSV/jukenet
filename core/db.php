@@ -253,6 +253,28 @@ class Database {
       return $isOk;
     }
 
+    public function clearUserGroups($uid) {
+      $stmt = $this->db->prepare("DELETE FROM user_group_replation WHERE user=?");
+      return $stmt->execute([$uid]);
+    }
+
+    public function setUserGroups($uid) {
+      $this->clearUserGroups($uid);
+      $sql = "INSERT IGNORE INTO user_group_replation(user, groupname)
+        SELECT DISTINCT users.id, groups.name 'groupname'
+        FROM users
+        JOIN user_genre_styles ON users.id = user_genre_styles.user
+        JOIN groups ON user_genre_styles.genre = groups.musicgenre
+        WHERE
+          users.id = :uid AND
+          ((UNIX_TIMESTAMP() - users.birthTimestamp)/60/60/24/365) BETWEEN
+            groups.minAge AND groups.maxAge
+        ";
+      $stmt = $this->db->prepare($sql);
+      $stmt->bindValue(':uid',  $uid, PDO::PARAM_INT);
+      return $stmt->execute();
+    }
+
     public function editUserData($uid, $email, $role, $birthTimestamp) {
       $sql = "UPDATE users SET email=?,role=?,birthTimestamp=? WHERE id=?";
       $stmt = $this->db->prepare($sql);

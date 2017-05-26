@@ -22,6 +22,7 @@ switch ($_GET['action']) {
     } else {
       if (empty($_POST['musicGenres'])) $_POST['musicGenres'] = [];
       if ($db->setUserMusicGenres($user['id'], $_POST['musicGenres'])) {
+        $db->setUserGroups($user['id']);
         $answer = [
           'status' => 'ok',
           'msg' => 'music_genres_saved',
