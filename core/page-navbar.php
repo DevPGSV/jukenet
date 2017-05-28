@@ -50,8 +50,6 @@
                               <span class="caret"></span>
                           </a>
                           <ul class="dropdown-menu">
-                              <li><a href="#">O1</a></li>
-                              <li><a href="#">O2</a></li>
                               <li><a href="#" id="logout-button"><span class="glyphicon glyphicon-log-out"></span> Log out</a></li>
                           </ul>
                       </li>

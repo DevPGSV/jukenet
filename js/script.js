@@ -79,7 +79,7 @@ $(document).ready(function() {
         editable: [
           [2, 'email'],
           [3, 'role', '{"admin": "admin", "melomaniac": "melomaniac", "newbie": "newbie"}'],
-          [4, 'birthdate'],
+          //[4, 'birthdate'],
         ]
       },
     });
