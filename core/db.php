@@ -275,10 +275,10 @@ class Database {
       return $stmt->execute();
     }
 
-    public function editUserData($uid, $email, $role, $birthTimestamp) {
-      $sql = "UPDATE users SET email=?,role=?,birthTimestamp=? WHERE id=?";
+    public function editUserData($uid, $email, $role) {
+      $sql = "UPDATE users SET email=?,role=? WHERE id=?";
       $stmt = $this->db->prepare($sql);
-      return $stmt->execute([$email, $role, $birthTimestamp, $uid]);
+      return $stmt->execute([$email, $role, $uid]);
     }
 
     public function getGroupData($gname) {

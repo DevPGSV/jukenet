@@ -212,33 +212,23 @@ switch ($_GET['action']) {
       } else if ($_POST['action'] === 'edit') {
         $uemail = $_POST['email'];
         $urole = $_POST['role'];
-        $ubirthdate = $_POST['birthdate'];
-        $birthdate = DateTime::createFromFormat('d/m/Y', $ubirthdate);
-        if ($birthdate === false) {
+
+        try {
+          $status = $db->editUserData($uid, $uemail, $urole);
+        } catch(Exception $e) {
+          $status = false;
+        }
+        if ($status) {
+          $answer = [
+            'status' => 'ok',
+            'msg' => 'user_edited',
+          ];
+        } else {
           http_response_code(409);
           $answer = [
             'status' => 'error',
-            'msg' => 'invalid_date',
+            'msg' => 'user_not_edited',
           ];
-        } else {
-          $birthTimestamp = $birthdate->format("U");
-          try {
-            $status = $db->editUserData($uid, $uemail, $urole, $ubirthdate);
-          } catch(Exception $e) {
-            $status = false;
-          }
-          if ($status) {
-            $answer = [
-              'status' => 'ok',
-              'msg' => 'user_edited',
-            ];
-          } else {
-            http_response_code(409);
-            $answer = [
-              'status' => 'error',
-              'msg' => 'user_not_edited',
-            ];
-          }
         }
       }
     }

@@ -218,7 +218,7 @@ $(document).ready(function() {
 
           $("#message-modal").attr('data-messageid', data.message.id);
           $("#message-modal .modal-title").text(data.message.subject);
-          $("#message-modal .modal-body").html(data.message.text.replace(/(?:\r\n|\r|\n)/g, '<br />'));
+          $("#message-modal .modal-body").html(data.message.text.replace(/(?:\r\n|\r|\n)/g, "<br>"));
           if ($(messageEntry).hasClass('message_received')) {
             $('#message-modal-markasnotread').show();
           } else {
