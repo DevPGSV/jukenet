@@ -63,6 +63,20 @@ $(document).ready(function() {
       success: function(data) {
         if (data['status'] === 'ok') {
           $('#admin_managegroupstable > tbody:last-child').append('<tr><td>' + data['groupdata']['name'] + '</td><td>' + data['groupdata']['musicgenre'] + '</td><td>' + data['groupdata']['minage'] + ' - ' + data['groupdata']['maxage'] + '</td><td style="white-space: nowrap; width: 1%;"><div class="tabledit-toolbar btn-toolbar" style="text-align: left;"> <div class="btn-group btn-group-sm" style="float: none;"><button type="button" class="tabledit-delete-button btn btn-sm btn-default" style="float: none;"><span class="glyphicon glyphicon-trash"></span></button></div> <button type="button" class="tabledit-confirm-button btn btn-sm btn-danger" style="display: none; float: none;">Confirm</button></div></td></tr>');
+
+          $('#addgroup-form-groupname').val('');
+
+          $('#addgroup-form-musicgenres').selectpicker('deselectAll');
+          $('#addgroup-form-musicgenres').val('');
+          $('#addgroup-form-musicgenres').selectpicker('render');
+
+          $("#addgroup-form-age").slider("values", 0, 20);
+          $("#addgroup-form-age").slider("values", 1, 30);
+
+          $("#addgroup-form-age").find('.ui-slider-range').html($("#addgroup-form-age").slider("values", 0) + " - " + $("#addgroup-form-age").slider("values", 1));
+          $("#addgroup-form-age-d0").html($("#addgroup-form-age").slider("values", 0));
+          $("#addgroup-form-age-d1").html($("#addgroup-form-age").slider("values", 1));
+
         } else {
           alert(data['msg']);
         }
